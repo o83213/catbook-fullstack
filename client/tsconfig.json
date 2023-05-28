@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "outDir": "./build",
+    "downlevelIteration": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "baseUrl": "src",
+    "paths": {
+      "@root/*": ["./*"],
+      "@components/*": ["./components/*"],
+      "@contents/*": ["./contents/*"],
+      "@lib/*": ["./lib/*"],
+      "@utils/*": ["./utils/*"],
+      "@services/*": ["./services/*"],
+      "@graphql/*": ["./graphql/*"],
+      "@generated/*": ["./generated/*"],
+      "@store/*": ["./store/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "additional.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/Chat/Conversations/ConversationItem"
+  ],
+  "exclude": ["node_modules"]
+}

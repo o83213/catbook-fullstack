@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String                    @id @default(uuid())
+  email          String                    @unique
+  name           String?
+  password       String
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+  confirmed      Boolean                   @default(false)
+  isLogin        Boolean                   @default(false)
+  posts          Post[]
+  comments       Comment[]
+  profile        Profile?
+  friendRequests String[]
+  requestor      Friendship[]              @relation("requestor")
+  addressee      Friendship[]              @relation("addressee")
+  likes          Like[]
+  conversations  ConversationParticipant[]
+  messages       Message[]
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  bio         String
+  coverImage  String
+  avatarImage String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  title     String
+  content   String
+  postImage String?
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  likes     Like[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Friendship {
+  requestor   User   @relation("requestor", fields: [requestorId], references: [id])
+  requestorId String
+  addressee   User   @relation("addressee", fields: [addresseeId], references: [id])
+  addresseeId String
+
+  @@id([requestorId, addresseeId])
+}
+
+model Like {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+
+  @@unique([userId, postId])
+}
+
+model Conversation {
+  id              String                    @id @default(uuid())
+  participants    ConversationParticipant[]
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  messages        Message[]
+  latestMessageId String?                   @unique
+  latestMessage   Message?                  @relation(name: "latestConversatoinMessage", fields: [latestMessageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ConversationParticipant {
+  id                   String       @id @default(uuid())
+  userId               String
+  user                 User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId       String
+  conversation         Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  hasSeenLatestMessage Boolean
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  body           String
+  sender         User          @relation(fields: [senderId], references: [id])
+  senderId       String
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  isLatestIn     Conversation? @relation(name: "latestConversatoinMessage")
+}

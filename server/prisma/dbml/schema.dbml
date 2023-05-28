@@ -1,0 +1,139 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  email String [unique, not null]
+  name String
+  password String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  confirmed Boolean [not null, default: false]
+  isLogin Boolean [not null, default: false]
+  posts Post [not null]
+  comments Comment [not null]
+  profile Profile
+  friendRequests String[] [not null]
+  requestor Friendship [not null]
+  addressee Friendship [not null]
+  likes Like [not null]
+  conversations ConversationParticipant [not null]
+  messages Message [not null]
+}
+
+Table Profile {
+  id String [pk]
+  bio String [not null]
+  coverImage String [not null]
+  avatarImage String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  userId String [unique, not null]
+  user User [not null]
+}
+
+Table Post {
+  id String [pk]
+  title String [not null]
+  content String [not null]
+  postImage String
+  published Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  authorId String [not null]
+  author User [not null]
+  comments Comment [not null]
+  likes Like [not null]
+}
+
+Table Comment {
+  id String [pk]
+  content String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  authorId String [not null]
+  author User [not null]
+  postId String [not null]
+  post Post [not null]
+}
+
+Table Friendship {
+  requestor User [not null]
+  requestorId String [not null]
+  addressee User [not null]
+  addresseeId String [not null]
+
+  indexes {
+    (requestorId, addresseeId) [pk]
+  }
+}
+
+Table Like {
+  id String [pk]
+  user User [not null]
+  userId String [not null]
+  post Post [not null]
+  postId String [not null]
+
+  indexes {
+    (userId, postId) [unique]
+  }
+}
+
+Table Conversation {
+  id String [pk]
+  participants ConversationParticipant [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  messages Message [not null]
+  latestMessageId String [unique]
+  latestMessage Message
+}
+
+Table ConversationParticipant {
+  id String [pk]
+  userId String [not null]
+  user User [not null]
+  conversationId String [not null]
+  conversation Conversation [not null]
+  hasSeenLatestMessage Boolean [not null]
+}
+
+Table Message {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  body String [not null]
+  sender User [not null]
+  senderId String [not null]
+  conversationId String [not null]
+  conversation Conversation [not null]
+  isLatestIn Conversation
+}
+
+Ref: Profile.userId - User.id [delete: Cascade]
+
+Ref: Post.authorId > User.id [delete: Cascade]
+
+Ref: Comment.authorId > User.id [delete: Cascade]
+
+Ref: Comment.postId > Post.id [delete: Cascade]
+
+Ref: Friendship.requestorId > User.id
+
+Ref: Friendship.addresseeId > User.id
+
+Ref: Like.userId > User.id [delete: Cascade]
+
+Ref: Like.postId > Post.id [delete: Cascade]
+
+Ref: Conversation.latestMessageId - Message.id
+
+Ref: ConversationParticipant.userId > User.id [delete: Cascade]
+
+Ref: ConversationParticipant.conversationId > Conversation.id [delete: Cascade]
+
+Ref: Message.senderId > User.id
+
+Ref: Message.conversationId > Conversation.id [delete: Cascade]

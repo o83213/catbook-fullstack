@@ -1,0 +1,7 @@
+/node_modules
+# Keep environment variables out of version control
+.env
+#run generated to create prisma model
+/prisma/generated/
+#run generated to create prisma model
+/prisma/migrations/
