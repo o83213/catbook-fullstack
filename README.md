@@ -1,5 +1,7 @@
 # catbook-fullstack
 
+This is a simple introduction of this app, there is a version with more detail in the folder.
+
 ## Introduction 
   This is a social media app clone with the common features, like: creating post, leaving comment, and adding friends.
 Below are the seven main features:
